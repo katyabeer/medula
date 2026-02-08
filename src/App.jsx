@@ -15,14 +15,14 @@ import RateSessionScreen from './screens/RateSessionScreen';
 
 const screens = [
   { id: 'splash',  label: 'Splash',        component: SplashScreen },
-  { id: 'poor',    label: 'Нет сети',      component: PoorConnectionScreen },
   { id: 'landing', label: 'Лендинг',       component: LandingScreen },
   { id: 'payment', label: 'Оплата',        component: PaymentSheet },
-  { id: 'payerr',  label: 'Ошибка оплаты', component: PaymentErrorScreen },
   { id: 'chat',    label: 'Чат',           component: ChatScreen },
-  { id: 'close',   label: 'Закрытие',      component: CloseConfirmScreen },
-  { id: 'neterr',  label: 'Ошибка сети',   component: NetworkErrorScreen },
   { id: 'rate',    label: 'Оценка',        component: RateSessionScreen },
+  { id: 'close',   label: 'Закрытие',      component: CloseConfirmScreen },
+  { id: 'poor',    label: 'Нет сети',      component: PoorConnectionScreen },
+  { id: 'neterr',  label: 'Ошибка сети',   component: NetworkErrorScreen },
+  { id: 'payerr',  label: 'Ошибка оплаты', component: PaymentErrorScreen },
 ];
 
 export default function App() {

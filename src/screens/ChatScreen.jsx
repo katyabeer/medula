@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { COLORS, FONTS } from '../tokens';
 import { IconClose, IconHistory, IconSend } from '../components/Icons';
 import WireLabel from '../components/WireLabel';
@@ -41,7 +41,22 @@ const MedulaAvatar = ({ size = 28 }) => (
   </div>
 );
 
-export default function ChatScreen({ showLabels }) {
+export default function ChatScreen({ showLabels, onNavigate }) {
+  const [inputValue, setInputValue] = useState('');
+  const [showCloseSheet, setShowCloseSheet] = useState(false);
+  const textareaRef = useRef(null);
+
+  const handleInputChange = (e) => {
+    const textarea = e.target;
+    setInputValue(textarea.value);
+    
+    // Reset height to recalculate
+    textarea.style.height = 'auto';
+    // Set to scrollHeight, capped at max (4 lines)
+    const maxHeight = 66;
+    textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+  };
+
   return (
     <div
       style={{
@@ -52,6 +67,26 @@ export default function ChatScreen({ showLabels }) {
         position: 'relative',
       }}
     >
+      {/* Placeholder color styling and animations (inline styles don't support ::placeholder) */}
+      <style>{`
+        .chat-input::placeholder {
+          color: ${COLORS.textDim};
+        }
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
       <WireLabel visible={showLabels} style={{ top: 8, left: 50 }}>06 — ЧАТ</WireLabel>
 
       {/* Header */}
@@ -64,7 +99,10 @@ export default function ChatScreen({ showLabels }) {
           borderBottom: `1px solid ${COLORS.border}`,
         }}
       >
-        <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: 'pointer' }}>
+        <div
+          onClick={() => setShowCloseSheet(true)}
+          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: 'pointer' }}
+        >
           <IconClose />
           <WireLabel visible={showLabels} style={{ top: -4, left: -4 }}>Закрыть</WireLabel>
         </div>
@@ -87,7 +125,7 @@ export default function ChatScreen({ showLabels }) {
           <div
             style={{
               maxWidth: '82%',
-              padding: '10px 12px',
+              padding: '10px 12px 6px',
               borderRadius: '2px 12px 12px 12px',
               background: `linear-gradient(135deg, ${COLORS.bgElevated}, rgba(165,156,217,0.06))`,
               border: `1px solid ${COLORS.lavenderBorder}`,
@@ -99,6 +137,9 @@ export default function ChatScreen({ showLabels }) {
             }}
           >
             Добро пожаловать. Я Медула. Расскажи, что тебя беспокоит — и я покажу, что скрывают знаки.
+            <div style={{ fontSize: 9, color: COLORS.textDim, fontFamily: FONTS.body, marginTop: 4, textAlign: 'right' }}>
+              19:05
+            </div>
           </div>
           <WireLabel visible={showLabels} style={{ top: -6, left: 0 }}>Сообщение Медулы — свечение</WireLabel>
         </div>
@@ -108,7 +149,7 @@ export default function ChatScreen({ showLabels }) {
           <div
             style={{
               maxWidth: '78%',
-              padding: '10px 12px',
+              padding: '10px 12px 6px',
               borderRadius: '12px 2px 12px 12px',
               background: COLORS.accentMuted,
               border: `1px solid rgba(192,168,117,0.1)`,
@@ -119,6 +160,9 @@ export default function ChatScreen({ showLabels }) {
             }}
           >
             Мне 34, думаю менять работу. Что покажут знаки?
+            <div style={{ fontSize: 9, color: COLORS.textDim, fontFamily: FONTS.body, marginTop: 4, textAlign: 'right' }}>
+              19:06
+            </div>
           </div>
         </div>
 
@@ -165,9 +209,27 @@ export default function ChatScreen({ showLabels }) {
             border: `1px solid ${COLORS.border}`,
           }}
         >
-          <div style={{ flex: 1, fontSize: 11, color: COLORS.textDim, fontFamily: FONTS.body }}>
-            Задайте вопрос...
-          </div>
+          <textarea
+            ref={textareaRef}
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder="Задайте вопрос..."
+            rows={1}
+            className="chat-input"
+            style={{
+              flex: 1,
+              fontSize: 11,
+              color: COLORS.text,
+              fontFamily: FONTS.body,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              resize: 'none',
+              maxHeight: 66,
+              overflowY: 'auto',
+              lineHeight: 1.5,
+            }}
+          />
           <div
             style={{
               width: 28,
@@ -185,6 +247,79 @@ export default function ChatScreen({ showLabels }) {
         </div>
         <WireLabel visible={showLabels} style={{ bottom: 0, left: 12 }}>Расширяется вверх при длинном тексте</WireLabel>
       </div>
+
+      {/* Close confirmation bottom sheet */}
+      {showCloseSheet && (
+        <>
+          {/* Overlay backdrop */}
+          <div
+            onClick={() => setShowCloseSheet(false)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: COLORS.overlay,
+              animation: 'fadeIn 0.2s ease-out',
+            }}
+          />
+          {/* Bottom sheet */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: COLORS.bgSheet,
+              borderRadius: '16px 16px 0 0',
+              padding: '20px 18px',
+              border: `1px solid ${COLORS.border}`,
+              borderBottom: 'none',
+              boxShadow: '0 -8px 40px rgba(0,0,0,0.5)',
+              animation: 'slideUp 0.25s ease-out',
+            }}
+          >
+            <div style={{ fontSize: 14, fontFamily: FONTS.display, color: COLORS.text, textAlign: 'center', marginBottom: 6 }}>
+              Завершить чат-сессию?
+            </div>
+            <div style={{ fontSize: 10, color: COLORS.textMuted, fontFamily: FONTS.body, textAlign: 'center', lineHeight: 1.5, marginBottom: 18 }}>
+              Чат не сохранится после завершения. Вы сможете скопировать его перед закрытием.
+            </div>
+
+            <div
+              onClick={() => onNavigate && onNavigate('rate')}
+              style={{
+                padding: '11px 0',
+                borderRadius: 10,
+                background: COLORS.errorBg,
+                border: `1px solid ${COLORS.errorBorder}`,
+                textAlign: 'center',
+                fontSize: 12,
+                color: COLORS.error,
+                fontFamily: FONTS.body,
+                marginBottom: 8,
+                cursor: 'pointer',
+              }}
+            >
+              Завершить сессию
+            </div>
+
+            <div
+              onClick={() => setShowCloseSheet(false)}
+              style={{
+                padding: '11px 0',
+                borderRadius: 10,
+                border: `1px solid ${COLORS.border}`,
+                textAlign: 'center',
+                fontSize: 12,
+                color: COLORS.textMuted,
+                fontFamily: FONTS.body,
+                cursor: 'pointer',
+              }}
+            >
+              Отменить
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
