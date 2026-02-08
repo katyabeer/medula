@@ -3,7 +3,7 @@ import { COLORS, FONTS } from '../tokens';
 import Portal from '../components/Portal';
 import WireLabel from '../components/WireLabel';
 
-export default function RateSessionScreen({ showLabels }) {
+export default function RateSessionScreen({ showLabels, onNavigate }) {
   const [rating, setRating] = useState(0);
 
   return (
@@ -49,16 +49,44 @@ export default function RateSessionScreen({ showLabels }) {
         ))}
       </div>
 
-      {/* Promo / return CTA */}
+      {/* Divider */}
+      <div
+        style={{
+          width: 64,
+          height: 1,
+          background: `linear-gradient(90deg, transparent, ${COLORS.accent}, transparent)`,
+          marginBottom: 20,
+        }}
+      />
+
+      {/* Secondary CTA */}
+      <div
+        onClick={() => onNavigate && onNavigate('chat')}
+        style={{
+          width: '100%',
+          padding: '13px 0',
+          borderRadius: 10,
+          background: 'transparent',
+          border: `1px solid ${COLORS.accent}`,
+          textAlign: 'center',
+          fontSize: 13,
+          fontWeight: 500,
+          color: COLORS.accent,
+          fontFamily: FONTS.body,
+          cursor: 'pointer',
+          boxShadow: `0 0 20px ${COLORS.accentGlow}, inset 0 0 20px rgba(192,168,117,0.05)`,
+          marginBottom: 16,
+        }}
+      >
+        Начать новую чат-сессию
+      </div>
+
+      {/* Promo */}
       <div
         style={{
           width: '100%',
-          padding: '14px 16px',
-          borderRadius: 12,
-          background: `linear-gradient(135deg, ${COLORS.accentMuted}, rgba(165,156,217,0.06))`,
-          border: `1px solid rgba(192,168,117,0.12)`,
+          padding: '10px 16px',
           textAlign: 'center',
-          marginBottom: 10,
           position: 'relative',
         }}
       >
@@ -69,23 +97,6 @@ export default function RateSessionScreen({ showLabels }) {
           Следующая чат-сессия по особой цене
         </div>
         <WireLabel visible={showLabels} style={{ top: -6, right: -4 }}>Прощальный промо</WireLabel>
-      </div>
-
-      <div
-        style={{
-          width: '100%',
-          padding: '12px 0',
-          borderRadius: 10,
-          background: `linear-gradient(135deg, rgba(192,168,117,0.12), rgba(192,168,117,0.06))`,
-          border: `1px solid rgba(192,168,117,0.15)`,
-          textAlign: 'center',
-          fontSize: 12,
-          color: COLORS.accent,
-          fontFamily: FONTS.body,
-          cursor: 'pointer',
-        }}
-      >
-        Начать новую чат-сессию
       </div>
     </div>
   );

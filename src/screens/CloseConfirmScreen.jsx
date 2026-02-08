@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { COLORS, FONTS } from '../tokens';
 import WireLabel from '../components/WireLabel';
 
-export default function CloseConfirmScreen({ showLabels }) {
+export default function CloseConfirmScreen({ showLabels, onNavigate }) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleEndSession = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      if (onNavigate) onNavigate('rate');
+    }, 1200);
+  };
+
   return (
     <div style={{ height: '100%', background: COLORS.bg, position: 'relative' }}>
       <WireLabel visible={showLabels} style={{ top: 8, left: 8 }}>07 — ПОДТВЕРЖДЕНИЕ ЗАКРЫТИЯ</WireLabel>
@@ -43,6 +52,7 @@ export default function CloseConfirmScreen({ showLabels }) {
           </div>
 
           <div
+            onClick={!isLoading ? handleEndSession : undefined}
             style={{
               padding: '11px 0',
               borderRadius: 10,
@@ -53,10 +63,32 @@ export default function CloseConfirmScreen({ showLabels }) {
               color: COLORS.error,
               fontFamily: FONTS.body,
               marginBottom: 8,
-              cursor: 'pointer',
+              cursor: isLoading ? 'default' : 'pointer',
+              opacity: isLoading ? 0.8 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              minHeight: 42,
             }}
           >
-            Закрыть
+            {isLoading ? (
+              <>
+                <div
+                  style={{
+                    width: 14,
+                    height: 14,
+                    border: `2px solid ${COLORS.errorBorder}`,
+                    borderTop: `2px solid ${COLORS.error}`,
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                  }}
+                />
+                <span>Завершение...</span>
+              </>
+            ) : (
+              'Завершить сессию'
+            )}
           </div>
 
           <div
@@ -69,12 +101,22 @@ export default function CloseConfirmScreen({ showLabels }) {
               color: COLORS.textMuted,
               fontFamily: FONTS.body,
               cursor: 'pointer',
+              opacity: isLoading ? 0.5 : 1,
+              pointerEvents: isLoading ? 'none' : 'auto',
             }}
           >
             Отменить
           </div>
         </div>
       </div>
+
+      {/* Spinner animation */}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
