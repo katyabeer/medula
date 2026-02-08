@@ -10,10 +10,15 @@ export default function Phone({ children, label }) {
           height: SIZES.phone.height,
           borderRadius: SIZES.phone.radius,
           background: COLORS.bg,
-          border: `1px solid ${COLORS.border}`,
+          border: `1px solid ${COLORS.phoneBorder}`,
           overflow: 'hidden',
           position: 'relative',
-          boxShadow: `0 0 60px rgba(165,156,217,0.06), inset 0 0 40px rgba(0,0,0,0.3)`,
+          boxShadow: `
+            0 0 0 1px rgba(165,156,217,0.1),
+            0 4px 24px rgba(0,0,0,0.4),
+            0 0 80px ${COLORS.phoneGlow},
+            inset 0 0 40px rgba(0,0,0,0.3)
+          `,
         }}
       >
         {/* Status bar */}

@@ -36,6 +36,10 @@ export const COLORS = {
   // Utility
   border:   'rgba(165,156,217,0.08)',
   overlay:  'rgba(10,9,16,0.85)',
+
+  // Phone frame
+  phoneBorder: 'rgba(165,156,217,0.18)',
+  phoneGlow:   'rgba(165,156,217,0.12)',
 };
 
 export const FONTS = {
