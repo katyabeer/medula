@@ -1,0 +1,29 @@
+# Medula Wireframes — Cursor Context
+
+## Project
+Interactive wireframes for Medula mobile app — a digital oracle chat service.
+Vite + React, no TypeScript, inline styles (intentional — matches Figma design token workflow).
+
+## Design System
+- All design tokens live in `src/tokens.js` — colors, fonts, spacing, sizes.
+- Change visual properties ONLY through tokens, never hardcode values in components.
+- Font families: Cormorant Garamond (display), DM Sans (body).
+- Dark theme only. Primary bg: #0A0910. Accent: #C0A875 (gold), #A59CD9 (lavender).
+
+## Architecture
+- `src/components/` — reusable UI primitives (Phone frame, Portal, WireLabel, Icons)
+- `src/screens/` — one file per screen, each receives `showLabels` prop
+- `src/App.jsx` — screen navigation, labels toggle
+- Screens are self-contained, no shared state between them (wireframe mode)
+
+## Conventions
+- All text in Russian (UI is Russian-only MVP)
+- WireLabel = annotation for developers, togglable via showLabels prop
+- Portal component = the key visual motif (animated concentric circles)
+- No external component libraries — everything is custom
+- SVG icons defined in Icons.jsx
+
+## Next Steps
+- Add keyboard navigation (← →) for screen switching
+- Evolve into hi-fi by replacing inline styles with CSS modules
+- Add Framer Motion for production-ready animations

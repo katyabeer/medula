@@ -1,0 +1,190 @@
+import React from 'react';
+import { COLORS, FONTS } from '../tokens';
+import { IconClose, IconHistory, IconSend } from '../components/Icons';
+import WireLabel from '../components/WireLabel';
+
+// Mini avatar component mimicking Portal circles
+const MedulaAvatar = ({ size = 28 }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      border: '1px solid rgba(165,156,217,0.4)',
+      boxShadow: '0 0 12px rgba(165,156,217,0.2), inset 0 0 8px rgba(165,156,217,0.1)',
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  >
+    {/* Inner ring */}
+    <div
+      style={{
+        position: 'absolute',
+        width: size * 0.65,
+        height: size * 0.65,
+        borderRadius: '50%',
+        border: '1px solid rgba(192,168,117,0.35)',
+        boxShadow: '0 0 6px rgba(192,168,117,0.15)',
+      }}
+    />
+    {/* Core glow */}
+    <div
+      style={{
+        width: size * 0.35,
+        height: size * 0.35,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(165,156,217,0.25) 0%, transparent 70%)',
+      }}
+    />
+  </div>
+);
+
+export default function ChatScreen({ showLabels }) {
+  return (
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: COLORS.bg,
+        position: 'relative',
+      }}
+    >
+      <WireLabel visible={showLabels} style={{ top: 8, left: 50 }}>06 — ЧАТ</WireLabel>
+
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '6px 16px 8px',
+          borderBottom: `1px solid ${COLORS.border}`,
+        }}
+      >
+        <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: 'pointer' }}>
+          <IconClose />
+          <WireLabel visible={showLabels} style={{ top: -4, left: -4 }}>Закрыть</WireLabel>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <MedulaAvatar size={28} />
+          <span style={{ fontSize: 13, fontFamily: FONTS.display, color: COLORS.text, letterSpacing: '0.08em' }}>
+            Медула
+          </span>
+        </div>
+        <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: 'pointer' }}>
+          <IconHistory />
+          <WireLabel visible={showLabels} style={{ top: -4, right: -8 }}>История</WireLabel>
+        </div>
+      </div>
+
+      {/* Chat messages */}
+      <div style={{ flex: 1, padding: '12px 14px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* Medula message */}
+        <div style={{ position: 'relative', animation: 'fadeInUp 0.3s ease-out' }}>
+          <div
+            style={{
+              maxWidth: '82%',
+              padding: '10px 12px',
+              borderRadius: '2px 12px 12px 12px',
+              background: `linear-gradient(135deg, ${COLORS.bgElevated}, rgba(165,156,217,0.06))`,
+              border: `1px solid ${COLORS.lavenderBorder}`,
+              fontSize: 11,
+              color: COLORS.text,
+              fontFamily: FONTS.body,
+              lineHeight: 1.55,
+              boxShadow: `0 0 20px rgba(165,156,217,0.04)`,
+            }}
+          >
+            Добро пожаловать. Я Медула. Расскажи, что тебя беспокоит — и я покажу, что скрывают знаки.
+          </div>
+          <WireLabel visible={showLabels} style={{ top: -6, left: 0 }}>Сообщение Медулы — свечение</WireLabel>
+        </div>
+
+        {/* User message */}
+        <div style={{ alignSelf: 'flex-end' }}>
+          <div
+            style={{
+              maxWidth: '78%',
+              padding: '10px 12px',
+              borderRadius: '12px 2px 12px 12px',
+              background: COLORS.accentMuted,
+              border: `1px solid rgba(192,168,117,0.1)`,
+              fontSize: 11,
+              color: COLORS.text,
+              fontFamily: FONTS.body,
+              lineHeight: 1.55,
+            }}
+          >
+            Мне 34, думаю менять работу. Что покажут знаки?
+          </div>
+        </div>
+
+        {/* Typing indicator */}
+        <div style={{ position: 'relative' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              gap: 5,
+              padding: '10px 16px',
+              borderRadius: '2px 12px 12px 12px',
+              background: COLORS.bgElevated,
+              border: `1px solid ${COLORS.lavenderBorder}`,
+              alignItems: 'center',
+            }}
+          >
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                style={{
+                  width: 5,
+                  height: 5,
+                  borderRadius: '50%',
+                  background: COLORS.lavender,
+                  animation: `dotPulse 1.2s ease-in-out ${i * 0.2}s infinite`,
+                }}
+              />
+            ))}
+          </div>
+          <WireLabel visible={showLabels} style={{ top: -6, left: 0 }}>Анимация «пишет...»</WireLabel>
+        </div>
+      </div>
+
+      {/* Input */}
+      <div style={{ padding: '8px 12px 12px', borderTop: `1px solid ${COLORS.border}`, position: 'relative' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 12px',
+            borderRadius: 20,
+            background: COLORS.bgElevated,
+            border: `1px solid ${COLORS.border}`,
+          }}
+        >
+          <div style={{ flex: 1, fontSize: 11, color: COLORS.textDim, fontFamily: FONTS.body }}>
+            Задайте вопрос...
+          </div>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              background: COLORS.accentMuted,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <IconSend />
+          </div>
+        </div>
+        <WireLabel visible={showLabels} style={{ bottom: 0, left: 12 }}>Расширяется вверх при длинном тексте</WireLabel>
+      </div>
+    </div>
+  );
+}
