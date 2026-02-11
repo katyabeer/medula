@@ -12,6 +12,7 @@ import ChatScreen from './screens/ChatScreen';
 import CloseConfirmScreen from './screens/CloseConfirmScreen';
 import NetworkErrorScreen from './screens/NetworkErrorScreen';
 import RateSessionScreen from './screens/RateSessionScreen';
+import MedulaChart from './components/medula-animation';
 
 const screens = [
   { id: 'splash',  label: 'Splash',        component: SplashScreen },
@@ -23,6 +24,7 @@ const screens = [
   { id: 'poor',    label: 'Нет сети',      component: PoorConnectionScreen },
   { id: 'neterr',  label: 'Ошибка сети',   component: NetworkErrorScreen },
   { id: 'payerr',  label: 'Ошибка оплаты', component: PaymentErrorScreen },
+  { id: 'animation', label: 'Анимация', component: MedulaChart },
 ];
 
 export default function App() {
@@ -72,7 +74,7 @@ export default function App() {
           </button>
         </div>
         <p style={{ fontSize: 11, color: COLORS.textDim, fontFamily: FONTS.body, margin: 0, lineHeight: 1.5 }}>
-          9 экранов · User Flow по ТЗ · Жёлтые метки = аннотации для разработчика
+          10 экранов · User Flow по ТЗ · Жёлтые метки = аннотации для разработчика
         </p>
       </div>
 
