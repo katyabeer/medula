@@ -1,13 +1,1066 @@
 <!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Medula — Wireframes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ohme — Plug-in Rewards Prototype</title>
+<style>
+  :root{
+    --navy-950:#070f1c;
+    --navy-900:#0a1628;
+    --navy-800:#122238;
+    --navy-700:#1a3049;
+    --navy-600:#24405e;
+    --line:rgba(255,255,255,0.08);
+    --teal:#00d4b8;
+    --teal-dim:#0a4d45;
+    --money:#4ade80;
+    --text-1:#f4f7fa;
+    --text-2:#9db0c2;
+    --text-3:#6d8299;
+    --danger:#ff6b6b;
+    --radius:18px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:#05090f;
+    color:var(--text-1);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    gap:36px;
+    padding:36px 20px;
+    flex-wrap:wrap;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+
+  /* ---------- PHONE ---------- */
+  .phone{
+    width:375px;
+    height:812px;
+    background:var(--navy-900);
+    border-radius:44px;
+    border:10px solid #000;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5);
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:150px; height:26px; background:#000; border-radius:0 0 16px 16px; z-index:20;
+  }
+  .status-bar{
+    height:46px; display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 22px 6px; font-size:13px; font-weight:600; color:var(--text-1);
+  }
+  .screen-viewport{
+    position:relative; height:calc(100% - 46px); overflow:hidden;
+  }
+  .screen{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    overflow:hidden; padding-bottom:82px;
+    opacity:0; pointer-events:none;
+    transition:opacity .18s ease;
+  }
+  .screen.active{ opacity:1; pointer-events:auto; }
+  .screen-body{ flex:1 1 auto; overflow-y:auto; padding:0 20px 22px; }
+  .screen-body::-webkit-scrollbar{ display:none; }
+
+  /* ---------- BOTTOM TAB BAR ---------- */
+  .tab-bar{
+    position:absolute; left:0; right:0; bottom:0; z-index:15;
+    display:flex; align-items:stretch;
+    height:82px; padding-bottom:14px;
+    background:var(--navy-950); border-top:1px solid var(--line);
+  }
+  .tab-bar.hidden{ display:none; }
+  .navtab{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:4px; color:var(--text-3); font-size:10px; font-weight:600; cursor:default;
+  }
+  .navtab svg{ width:20px; height:20px; }
+  .navtab.active{ color:var(--teal); cursor:pointer; }
+  .navtab.tappable{ cursor:pointer; }
+
+  h1.scr-title{ font-size:22px; margin:6px 0 4px; letter-spacing:-0.01em; }
+  .subtle{ color:var(--text-2); font-size:14px; line-height:1.5; }
+  .back-row{ display:flex; align-items:center; gap:10px; padding:10px 0 6px; color:var(--text-2); font-size:14px; }
+  .back-row svg{ width:18px; height:18px; }
+
+  .card{
+    background:var(--navy-800); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; margin-top:14px;
+  }
+  .btn-primary{
+    display:block; width:100%; text-align:center; background:var(--teal); color:#00201c;
+    font-weight:700; font-size:15px; padding:15px; border-radius:14px; border:none;
+    cursor:pointer; margin-top:16px;
+  }
+  .btn-primary:focus-visible{ outline:3px solid #fff; outline-offset:2px; }
+  .btn-primary.is-disabled{ background:var(--navy-600); color:var(--text-3); cursor:default; }
+
+  /* Redemption method chooser */
+  .method{
+    display:flex; align-items:flex-start; gap:12px; width:100%; text-align:left;
+    background:var(--navy-800); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; margin-top:8px; cursor:pointer;
+  }
+  .method.selected{ border-color:var(--teal); background:rgba(0,212,184,0.07); }
+  .method:focus-visible{ outline:2px solid var(--teal); outline-offset:2px; }
+  .method-radio{
+    flex-shrink:0; width:18px; height:18px; border-radius:50%;
+    border:2px solid var(--navy-600); margin-top:2px; position:relative;
+  }
+  .method.selected .method-radio{ border-color:var(--teal); }
+  .method.selected .method-radio::after{
+    content:""; position:absolute; inset:3px; border-radius:50%; background:var(--teal);
+  }
+  .method-body{ display:flex; flex-direction:column; gap:3px; }
+  .method-title{ font-size:14.5px; font-weight:700; color:var(--text-1); }
+  .method-sub{ font-size:12px; color:var(--text-2); line-height:1.4; }
+  .btn-ghost{
+    display:block; width:100%; text-align:center; background:transparent; color:var(--text-2);
+    font-weight:600; font-size:14px; padding:13px; border-radius:14px; border:1px solid var(--line);
+    cursor:pointer; margin-top:10px;
+  }
+  .btn-danger{
+    display:block; width:100%; text-align:center; background:transparent; color:var(--danger);
+    font-weight:700; font-size:15px; padding:14px; border-radius:14px;
+    border:1px solid rgba(255,107,107,0.4); cursor:pointer;
+  }
+  .btn-danger:focus-visible{ outline:2px solid var(--danger); outline-offset:2px; }
+  .leave-link{
+    display:block; width:100%; text-align:center; background:none; border:none;
+    color:var(--text-3); font-size:12px; font-weight:600;
+    padding:6px 0; cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+  }
+  .leave-link:focus-visible{ outline:2px solid var(--teal); outline-offset:2px; border-radius:6px; }
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; background:var(--teal-dim); color:var(--teal);
+    font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    padding:5px 10px; border-radius:100px;
+  }
+  .reassure{
+    display:flex; gap:10px; align-items:flex-start; background:rgba(0,212,184,0.08);
+    border:1px solid rgba(0,212,184,0.25); border-radius:14px; padding:12px 14px; margin-top:14px;
+  }
+  .reassure svg{ flex-shrink:0; margin-top:2px; width:16px; height:16px; }
+  .reassure p{ margin:0; font-size:12.5px; color:#bfe9e2; line-height:1.5; }
+
+  /* Bank setup form */
+  .field-label{ display:block; font-size:12px; color:var(--text-2); font-weight:600; margin:14px 0 6px; }
+  .field-label:first-of-type{ margin-top:0; }
+  .field-input{
+    width:100%; background:var(--navy-700); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; font-size:14px; color:var(--text-1);
+  }
+  .field-input:focus-visible{ outline:2px solid var(--teal); border-color:var(--teal); }
+
+  /* Rewards tab / discovery */
+  .tab-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 0; border-bottom:1px solid var(--line); color:var(--text-2); font-size:14px;
+  }
+  .teaser-card{
+    background:linear-gradient(135deg,#0d2f2b,#0a1628); border:1px solid rgba(0,212,184,0.3);
+    border-radius:var(--radius); padding:18px; margin-top:16px; cursor:pointer;
+  }
+  .teaser-card .amt{ font-size:26px; font-weight:800; color:var(--money); margin:6px 0 2px; }
+
+  /* Earn breakdown rows */
+  .earn-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; color:var(--text-2); margin-top:4px; }
+  .earn-amt{ color:var(--money); font-weight:700; }
+
+  /* Live programme card (time-bound framing, with explicit trial dates) */
+  .program-card{
+    border-radius:var(--radius); padding:16px 18px; margin-top:18px;
+    background:linear-gradient(135deg,#0d2f1c,#122238); border:1px solid rgba(74,222,128,0.4);
+  }
+  .program-card-top{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#4ade80; }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:#4ade80; box-shadow:0 0 0 3px rgba(74,222,128,0.22); }
+  .program-card-title{ font-size:15px; font-weight:800; color:var(--text-1); margin-top:9px; }
+  .program-card-dates{ font-weight:700; color:#7ce8a4; }
+
+  /* Onboarding carousel (explainer split into slides) */
+  .onb-slide{ display:none; }
+  .onb-slide.active{ display:block; }
+  .onb-back{ display:flex; align-items:center; gap:8px; color:var(--text-2); font-size:14px; padding:12px 0 2px; cursor:pointer; }
+  .onb-illustration{ display:flex; align-items:center; justify-content:center; margin:22px auto 4px; width:112px; height:112px; border-radius:50%; background:radial-gradient(circle at 35% 30%, rgba(0,212,184,0.28), rgba(0,212,184,0.03)); }
+  .onb-tagline{ font-size:25px; font-weight:800; text-align:center; letter-spacing:-0.02em; line-height:1.2; margin:18px 0 8px; }
+  .onb-intro{ text-align:center; }
+  .hook-amt{ font-size:44px; font-weight:800; color:var(--money); text-align:center; letter-spacing:-0.02em; line-height:1.05; margin-top:2px; }
+  .onb-dots{ display:flex; gap:6px; justify-content:center; margin:0 0 14px; }
+  .onb-dot{ width:7px; height:7px; border-radius:50%; background:var(--navy-600); }
+  .onb-dot.active{ background:var(--teal); width:20px; border-radius:4px; }
+
+  /* Fixed CTA footer — reusable across any screen that needs its main action pinned */
+  .cta-bar{
+    position:relative; flex-shrink:0; z-index:12;
+    display:flex; flex-direction:column; gap:12px;
+    padding:18px 20px 20px; background:var(--navy-900);
+  }
+  .cta-bar::before{
+    content:""; position:absolute; left:0; right:0; top:-28px; height:28px; pointer-events:none;
+    background:linear-gradient(to bottom, rgba(10,22,40,0), var(--navy-900));
+  }
+  .cta-bar > .btn-primary, .cta-bar > .btn-ghost{ margin-top:0; }
+  .onb-cta{ display:none; }
+  .onb-cta.active{ display:block; }
+  .onb-cta .btn-primary{ margin-top:0; }
+
+  /* Switch confirmation styles — unused in this variant, kept for parity with version A */
+  .switch-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .switch-side{ flex:1; text-align:center; }
+  .switch-cap{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-3); }
+  .switch-val{ font-size:14px; font-weight:700; color:var(--text-2); margin-top:3px; }
+  .mini-toggle{ width:38px; height:22px; border-radius:100px; background:var(--navy-600); position:relative; margin:8px auto 0; }
+  .mini-toggle::after{ content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:var(--text-3); }
+  .mini-toggle.on{ background:var(--teal); }
+  .mini-toggle.on::after{ left:19px; background:#00201c; }
+
+  /* Dashboard */
+  .total-block{ text-align:center; padding:22px 0 8px; }
+  .total-block .label{ color:var(--text-2); font-size:13px; }
+  .total-block .value{ font-size:42px; font-weight:800; color:var(--money); margin-top:2px; }
+  .redeem-chip{
+    display:inline-flex; align-items:center; gap:5px;
+    background:rgba(0,212,184,0.08); border:1px solid rgba(0,212,184,0.28);
+    color:var(--teal); font-size:12.5px; font-weight:700;
+    padding:7px 14px; border-radius:100px; cursor:pointer; margin-top:12px;
+  }
+  .redeem-chip svg{ width:13px; height:13px; }
+  .redeem-chip:focus-visible{ outline:2px solid var(--teal); outline-offset:2px; }
+
+  /* Combined charging chart legend */
+  .legend-row{ display:flex; }
+  .legend-chip{
+    display:flex; align-items:flex-start; gap:7px; background:none; border:none; width:100%;
+    font-size:11.5px; font-weight:600; padding:4px 0; cursor:pointer; opacity:0.7; text-align:left;
+  }
+  .legend-chip.active{ opacity:1; }
+  .legend-swatch{ width:9px; height:9px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+  .progress-track{ height:10px; background:var(--navy-700); border-radius:100px; overflow:hidden; margin-top:10px; }
+  .progress-fill{ height:100%; background:var(--teal); border-radius:100px; }
+  .day-dots{ display:flex; gap:8px; margin-top:12px; position:relative; }
+  .day-dot{ flex:1; height:34px; border-radius:9px; background:var(--navy-700); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-3); font-weight:700; }
+  .day-dot.done{ background:var(--teal-dim); color:var(--teal); border:1px solid rgba(0,212,184,.4); }
+  .day-dot.partial{ background:rgba(255,169,77,0.16); color:#ffb066; border:1px solid rgba(255,169,77,0.45); cursor:pointer; }
+  .day-tooltip{
+    display:none; position:absolute; top:calc(100% + 8px); left:31%; transform:translateX(-50%);
+    width:172px; background:var(--navy-600); border:1px solid var(--line); border-radius:10px;
+    padding:9px 12px; font-size:11.5px; color:var(--text-1); line-height:1.4;
+    box-shadow:0 10px 24px rgba(0,0,0,0.4); z-index:5;
+  }
+  .day-tooltip::before{
+    content:""; position:absolute; top:-5px; left:50%; transform:translateX(-50%) rotate(45deg);
+    width:9px; height:9px; background:var(--navy-600); border-left:1px solid var(--line); border-top:1px solid var(--line);
+  }
+  .day-tooltip.show{ display:block; }
+
+  /* This-week live pot (dashboard) */
+  .weekpot-row{ display:flex; justify-content:space-between; align-items:baseline; }
+  .weekpot-amt{ font-size:20px; font-weight:800; color:var(--money); }
+  .weekpot-cap{ font-size:11.5px; color:var(--text-3); }
+  .weekpot-track{ height:8px; background:var(--navy-700); border-radius:100px; overflow:hidden; margin-top:10px; }
+  .weekpot-fill{ height:100%; background:var(--teal); border-radius:100px; }
+
+  /* Weekly earnings tiers (explainer 'what you'll earn') — 3-tier ladder */
+  .tier-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:11px 12px; border-radius:12px; background:var(--navy-700); margin-top:7px;
+  }
+  .tier-plugs{ display:flex; align-items:center; gap:5px; }
+  .tier-plugs svg{ width:15px; height:15px; }
+  .tier-label{ font-size:12.5px; color:var(--text-2); font-weight:600; }
+  .tier-amt{ font-size:15px; font-weight:800; color:var(--money); flex-shrink:0; }
+  .tier-foot{ font-size:11.5px; color:var(--text-3); margin:10px 0 0; line-height:1.45; }
+
+  /* Three simple rules list */
+  .rule-row{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px; color:var(--text-2); line-height:1.4; }
+  .rule-num{ flex-shrink:0; width:18px; height:18px; border-radius:50%; background:var(--teal-dim); color:var(--teal); font-size:10.5px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+  .rule-note{ margin-left:28px; margin-top:8px; }
+  .rules-footnote{
+    margin-top:30px; padding-top:18px; border-top:1px solid var(--line);
+  }
+  .rules-footnote p{
+    margin:0; font-size:13px; line-height:1.6; color:var(--text-1);
+  }
+
+  /* Visual 'three simple rules' cards */
+  .vrule{
+    display:flex; align-items:center; gap:14px;
+    background:var(--navy-800); border:1px solid var(--line); border-radius:14px;
+    padding:15px 16px; margin-top:11px;
+  }
+  .vrule-icon{
+    flex-shrink:0; width:48px; height:48px; border-radius:13px;
+    background:var(--teal-dim); display:flex; align-items:center; justify-content:center;
+  }
+  .vrule-icon svg{ width:25px; height:25px; }
+  .vrule-title{ font-size:14.5px; font-weight:800; color:var(--text-1); }
+  .vrule-sub{ font-size:12.5px; color:var(--text-2); line-height:1.4; margin-top:3px; }
+  .vrule-note{ display:flex; gap:9px; align-items:flex-start; margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+  .vrule-note svg{ flex-shrink:0; width:15px; height:15px; margin-top:1px; }
+  .vrule-note p{ margin:0; font-size:12px; color:var(--text-2); line-height:1.5; }
+  .vrule-note b{ color:var(--text-1); }
+
+  /* Dashboard info entry point + bottom sheet */
+  .info-btn{
+    flex-shrink:0; width:26px; height:26px; border-radius:50%; border:1px solid var(--line);
+    background:var(--navy-800); color:var(--text-2); font-size:13px; font-weight:700; font-style:italic;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .sheet-backdrop{
+    position:absolute; inset:0; background:rgba(0,0,0,.55); z-index:40;
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .sheet-backdrop.open{ opacity:1; pointer-events:auto; }
+  .bottom-sheet{
+    position:absolute; left:0; right:0; bottom:0; z-index:41;
+    background:var(--navy-800); border:1px solid var(--line); border-bottom:none;
+    border-radius:20px 20px 0 0; padding:14px 20px 20px; max-height:82%;
+    display:flex; flex-direction:column;
+    transform:translateY(100%); transition:transform .25s ease;
+  }
+  .bottom-sheet.open{ transform:translateY(0); }
+  .sheet-body{ flex:1 1 auto; min-height:0; overflow-y:auto; }
+  .sheet-body::-webkit-scrollbar{ display:none; }
+  .bottom-sheet > .btn-primary{ flex-shrink:0; }
+  .sheet-handle{ width:36px; height:4px; background:var(--navy-600); border-radius:100px; margin:0 auto 16px; flex-shrink:0; }
+
+  /* Charging screen */
+  .car-header{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+  .car-header-title{ display:flex; align-items:center; gap:6px; color:#5fe3d4; font-size:16px; font-weight:700; }
+  .car-header-title svg{ width:14px; height:14px; }
+  .car-icon-badge{ position:relative; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; }
+  .car-icon-badge svg{ width:20px; height:20px; }
+  .car-icon-dot{ position:absolute; bottom:-2px; right:-2px; width:10px; height:10px; border-radius:50%; background:#3ddc84; border:2px solid var(--navy-900); }
+  .dyn-banner{
+    display:flex; align-items:center; gap:8px; justify-content:center;
+    margin:16px -20px 0; padding:12px 16px; border-radius:0; font-size:14.5px; font-weight:700;
+    color:#0a2a3a; background:linear-gradient(90deg, #5ad1ff, #5fe3d4);
+  }
+  .dyn-banner svg{ width:16px; height:16px; }
+  .gauge-wrap{ position:relative; display:flex; align-items:center; justify-content:center; margin:8px auto 0; }
+  .gauge-center{ position:absolute; text-align:center; }
+  .gauge-label{ font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--text-3); }
+  .gauge-value{ font-size:42px; font-weight:800; color:#39c6f0; line-height:1.1; margin-top:2px; }
+  .gauge-sub{ font-size:12.5px; color:var(--text-2); margin-top:2px; }
+  .charge-actions{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:6px; }
+  .charge-pill{
+    display:flex; align-items:center; gap:8px; padding:12px 22px; border-radius:100px;
+    background:var(--teal-dim); border:1px solid rgba(0,212,184,.35); color:#5fe3d4; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .charge-pill svg{ width:16px; height:16px; }
+  .pause-btn{
+    width:46px; height:46px; border-radius:50%; background:var(--teal-dim); border:1px solid rgba(0,212,184,.35);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .pause-btn svg{ width:16px; height:16px; }
+  .routines-btn{ display:flex; align-items:center; justify-content:center; gap:8px; }
+  .routines-btn svg{ width:16px; height:16px; }
+
+  /* History */
+  .log-row{ display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-bottom:1px solid var(--line); }
+  .log-row .meta{ font-size:12px; color:var(--text-3); }
+  .status-tag{ font-size:11px; font-weight:700; padding:4px 9px; border-radius:100px; }
+  .status-tag.counted{ background:var(--teal-dim); color:var(--teal); }
+  .status-tag.short{ background:rgba(255,107,107,0.12); color:var(--danger); }
+  .log-row-wrap{ padding-top:13px; border-bottom:1px solid var(--line); }
+  .log-fyi{ display:flex; gap:8px; align-items:flex-start; background:rgba(255,107,107,0.07); border:1px solid rgba(255,107,107,0.22); border-radius:10px; padding:9px 11px; margin-bottom:12px; }
+  .log-fyi svg{ flex-shrink:0; margin-top:1px; width:14px; height:14px; color:var(--danger); }
+  .log-fyi p{ margin:0; font-size:11.5px; color:var(--text-2); line-height:1.45; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status-bar"><span>9:41</span><span>●●●●  Wi-Fi  92%</span></div>
+  <div class="screen-viewport">
+
+    <!-- 1. CHARGING (landing screen) -->
+    <div class="screen active" data-screen="charging">
+      <div class="car-header">
+        <div class="car-header-title">Your car
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="car-icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="1.6"><rect x="6" y="3" width="12" height="18" rx="3"/><circle cx="9.5" cy="8" r="1"/><circle cx="14.5" cy="8" r="1"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+          <span class="car-icon-dot"></span>
+        </div>
+      </div>
+
+      <div class="dyn-banner">
+        <svg viewBox="0 0 24 24" fill="#0a2a3a" stroke="none"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        Charging to your target at 4.6kW
+      </div>
+
+      <p class="subtle" style="text-align:center; margin-top:22px;">Plugged in at 18:35</p>
+
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 300 300" width="260" height="260">
+          <path d="M65.15,234.85 A120,120 0 1 1 234.85,234.85" fill="none" stroke="#3a4560" stroke-width="18" stroke-linecap="round"/>
+          <path d="M65.15,234.85 A120,120 0 0 1 31.48,131.23" fill="none" stroke="#39c6f0" stroke-width="18" stroke-linecap="round"/>
+          <circle cx="268.52" cy="131.23" r="9" fill="var(--navy-900)" stroke="#fff" stroke-width="3"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-label">BATTERY</div>
+          <div class="gauge-value">20%</div>
+          <div class="gauge-sub">~142 mi · 37 kWh</div>
+        </div>
+      </div>
+
+      <div class="charge-actions">
+        <button class="charge-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          Max charge
+        </button>
+        <button class="pause-btn" aria-label="Pause charging">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2" stroke-linecap="round"><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/></svg>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="earn-row"><span>Car battery level</span><span style="color:var(--text-1); font-weight:700;">20%</span></div>
+        <div class="earn-row"><span>Charge to</span><span style="color:#5fe3d4; font-weight:700;">80%</span></div>
+        <div class="earn-row" style="border-bottom:none;"><span>Car ready by</span><span style="color:#5fe3d4; font-weight:700;">Wed 07:00</span></div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:14px; color:#5fe3d4; font-size:13.5px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px; height:18px; flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+          Add cabin preconditioning
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="padding:2px 0 12px; border-bottom:1px solid var(--line);">
+          <div class="subtle" style="font-size:13px;">Price cap</div>
+          <div style="color:#5fe3d4; font-size:15px; font-weight:700; margin-top:2px;">9 pence per kWh</div>
+        </div>
+        <div style="padding:12px 0 2px;">
+          <div class="subtle" style="font-size:13px;">Tariff</div>
+          <div style="color:#5fe3d4; font-size:15px; font-weight:700; margin-top:2px;">Custom tariff</div>
+        </div>
+      </div>
+
+      <button class="btn-ghost routines-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+        Routines
+      </button>
+    </div>
+
+    <!-- 2. EXPLAINER (landing screen, 4-slide onboarding) -->
+    <div class="screen" data-screen="explainer">
+
+      <!-- 2a. INTRO / HOOK -->
+      <div class="onb-slide active" data-step="1">
+        <div class="program-card" style="margin-top:14px;">
+          <div class="program-card-top"><span class="live-dot"></span>Live now</div>
+          <div class="program-card-title">Winter season <span class="program-card-dates">· 4 Jan – 29 Mar</span></div>
+        </div>
+
+        <div class="onb-illustration">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="1.6">
+            <path d="M9 7V3M15 7V3M6 7h12v4a6 6 0 01-12 0V7z"/>
+            <path d="M12 17v4"/>
+          </svg>
+        </div>
+        <div class="onb-tagline">Get paid to plug in.</div>
+        <div class="hook-amt">Up to £30</div>
+
+        <div class="reassure" style="margin-top:22px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p>Works alongside your existing energy tariff — nothing about your tariff or your bills changes.</p>
+        </div>
+      </div>
+
+      <!-- 2b. HOW IT WORKS + WHAT YOU'LL EARN (merged) -->
+      <div class="onb-slide" data-step="2">
+        <div class="onb-back" onclick="goStep(1)">← Back</div>
+        <h1 class="scr-title" style="margin-top:4px;">What you can earn</h1>
+
+        <div class="card">
+          <span class="subtle" style="font-size:13px;">Total potential this winter</span>
+          <div style="font-size:32px; font-weight:800; color:var(--money); margin-top:4px;">Up to £30</div>
+          <p class="subtle" style="font-size:11.5px; margin-top:2px;">£2.50 a week max, over 12 weeks. Every week works on its own.</p>
+
+          <div style="border-top:1px solid var(--line); margin:14px 0 12px;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span class="subtle" style="font-size:13px;">Each week</span>
+            <span style="font-size:16px; font-weight:800; color:var(--text-1);">£0 – £2.50</span>
+          </div>
+          <div class="tier-row">
+            <div class="tier-plugs">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M9 7V3M15 7V3M6 7h12v4a6 6 0 01-12 0V7z"/><path d="M12 17v4"/></svg>
+              <span class="tier-label">1 plug-in</span>
+            </div>
+            <span class="tier-amt">£1.50</span>
+          </div>
+          <div class="tier-row">
+            <div class="tier-plugs">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M9 7V3M15 7V3M6 7h12v4a6 6 0 01-12 0V7z"/><path d="M12 17v4"/></svg>
+              <span class="tier-label">2 plug-ins</span>
+            </div>
+            <span class="tier-amt">£2.00</span>
+          </div>
+          <div class="tier-row">
+            <div class="tier-plugs">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M9 7V3M15 7V3M6 7h12v4a6 6 0 01-12 0V7z"/><path d="M12 17v4"/></svg>
+              <span class="tier-label">3 or more</span>
+            </div>
+            <span class="tier-amt">£2.50</span>
+          </div>
+          <p class="tier-foot">Three plug-ins is the most you need in any week. Plug in more if it suits you — it just won't add to that week's total.</p>
+        </div>
+      </div>
+
+      <!-- 2c. THREE SIMPLE RULES -->
+      <div class="onb-slide" data-step="3">
+        <div class="onb-back" onclick="goStep(2)">← Back</div>
+        <h1 class="scr-title" style="margin-top:4px;">Three simple rules</h1>
+        <p class="subtle" style="margin-top:-2px;">Here's what makes a week count.</p>
+
+        <div style="margin-top:16px;">
+          <div class="vrule">
+            <div class="vrule-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="#00d4b8" stroke="none"/></svg>
+            </div>
+            <div>
+              <div class="vrule-title">Set a charge target</div>
+              <div class="vrule-sub">And the time you need the car ready by.</div>
+            </div>
+          </div>
+          <div class="vrule">
+            <div class="vrule-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7V3M15 7V3M6 7h12v4a6 6 0 01-12 0V7z"/><path d="M12 17v4"/></svg>
+            </div>
+            <div>
+              <div class="vrule-title">Plug in 3 times a week</div>
+              <div class="vrule-sub">For 4 hours or more each time.</div>
+            </div>
+          </div>
+          <div class="vrule">
+            <div class="vrule-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 10v4"/><path d="M10.5 9.5L8.5 12.5h3l-2 3"/></svg>
+            </div>
+            <div>
+              <div class="vrule-title">Give your car room to charge</div>
+              <div class="vrule-sub">It needs to take some charge while it's plugged in.</div>
+            </div>
+          </div>
+
+          <div class="vrule-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+            <p><b>No max charges.</b> Charge at full speed whenever you need the car ready fast. It just won't count towards that week's total.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2d. WHY IT'S WORTH SOMETHING (simplified) -->
+      <div class="onb-slide" data-step="4">
+        <div class="onb-back" onclick="goStep(3)">← Back</div>
+        <h1 class="scr-title" style="margin-top:4px;">Why it's worth something</h1>
+        <p class="subtle" style="margin-top:-2px;">Charging in quieter hours takes pressure off the grid and uses more of the wind and solar that would otherwise go to waste. That's worth rewarding.</p>
+        <div class="card">
+          <svg viewBox="0 0 300 100" width="100%" height="100" role="img" aria-label="Max charging reaches the target around 1am then sits idle; a scheduled charge switches on and off in blocks through the night, finishing right on time at 7am">
+            <line x1="10" y1="90" x2="290" y2="90" stroke="#1a3049" stroke-width="1"/>
+            <path id="chart-instant" d="M10,90 L10,30 L161,30 L161,90 L290,90" fill="none" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path id="chart-flexible" d="M10,90 L46,90 L46,58 L84,58 L84,90 L118,90 L118,46 L162,46 L162,90 L202,90 L202,30 L290,30" fill="none" stroke="#00d4b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="161" cy="30" r="3.5" fill="#ff6b6b"/>
+            <circle cx="290" cy="30" r="3.5" fill="#00d4b8"/>
+          </svg>
+          <div style="display:flex; justify-content:space-between; margin-top:2px;">
+            <span class="subtle" style="font-size:10px;">6pm — plug in</span>
+            <span class="subtle" style="font-size:10px;">7am — ready by</span>
+          </div>
+          <div class="legend-row" style="margin-top:12px;">
+            <button class="legend-chip" id="legend-instant" style="color:#ff6b6b;" onclick="toggleLine('instant')">
+              <span class="legend-swatch" style="background:#ff6b6b;"></span>Max charge
+            </button>
+          </div>
+          <div class="legend-row">
+            <button class="legend-chip" id="legend-flexible" style="color:#00d4b8;" onclick="toggleLine('flexible')">
+              <span class="legend-swatch" style="background:#00d4b8;"></span>Charging to your target
+            </button>
+          </div>
+          <p class="subtle" style="font-size:12.5px; line-height:1.55; margin:14px 0 0; padding-top:14px; border-top:1px solid var(--line);"><b style="color:var(--text-1);">Same charge, same deadline.</b> You set the target and the ready-by time — we just choose the moments in between.</p>
+        </div>
+      </div>
+
+      <!-- Fixed footer: dots + CTA stay in the same place across all 3 steps -->
+      <div class="cta-bar" id="onb-cta-bar">
+        <div class="onb-cta active" data-cta="1">
+          <div class="onb-dots"><span class="onb-dot active"></span><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot"></span></div>
+          <button class="btn-primary" onclick="goStep(2)">Next</button>
+        </div>
+        <div class="onb-cta" data-cta="2">
+          <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot active"></span><span class="onb-dot"></span><span class="onb-dot"></span></div>
+          <button class="btn-primary" onclick="goStep(3)">Next</button>
+        </div>
+        <div class="onb-cta" data-cta="3">
+          <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot active"></span><span class="onb-dot"></span></div>
+          <button class="btn-primary" onclick="goStep(4)">Next</button>
+        </div>
+        <div class="onb-cta" data-cta="4">
+          <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot active"></span></div>
+          <button class="btn-primary" onclick="joinScheme()">Access Plug-in Rewards</button>
+          <button class="btn-ghost" onclick="go('charging')">Maybe later</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. SOFT OPT-IN CONFIRMATION -->
+    <div class="screen" data-screen="optin">
+      <div style="text-align:center; padding-top:60px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--teal-dim);display:flex;align-items:center;justify-content:center;margin:0 auto;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h1 class="scr-title" style="margin-top:18px;">You're in</h1>
+        <p class="subtle">We'll start counting your plug-ins from the start of the winter season.</p>
+      </div>
+      <div class="cta-bar">
+        <button class="btn-primary" onclick="go('dashboard')">View my rewards</button>
+      </div>
+    </div>
+
+    <!-- 4. DASHBOARD (core loop) -->
+    <div class="screen" data-screen="dashboard">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <h1 class="scr-title" style="margin-top:14px;">Plug-in Rewards</h1>
+        <button class="info-btn" style="margin-top:14px;" onclick="openSheet()" aria-label="How it works">i</button>
+      </div>
+      <p class="subtle" style="margin-top:-2px;">Winter season · Week 4 of 12 · ends 29 Mar</p>
+      <div class="total-block">
+        <div class="label">Earned so far this season</div>
+        <div class="value">£8.50</div>
+        <button class="redeem-chip" onclick="go('redeem')">
+          Redeem £8.50
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="card">
+        <div class="weekpot-row">
+          <span class="subtle" style="font-size:13px;">This week</span>
+          <span class="weekpot-amt">£2.50</span>
+        </div>
+        <div class="weekpot-track"><div class="weekpot-fill" style="width:100%;"></div></div>
+        <div class="weekpot-row" style="margin-top:8px;">
+          <span class="weekpot-cap">3 plug-ins — full amount reached</span>
+          <span class="weekpot-cap">£2.50 of £2.50</span>
+        </div>
+        <div class="day-dots" style="margin-top:14px;">
+          <div class="day-dot done">M</div><div class="day-dot done">T</div>
+          <div class="day-dot partial" onclick="toggleDayTip(event)">W</div>
+          <div class="day-dot done">T</div><div class="day-dot">F</div><div class="day-dot">S</div><div class="day-dot">S</div>
+          <div class="day-tooltip" id="day-tip">Under 4 hours — didn't count towards this week's total.</div>
+        </div>
+        <button class="btn-ghost" style="margin-top:14px;" onclick="go('history')">See plug-in history</button>
+      </div>
+      <div class="reassure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.4.3.5.8.5 1.3V16h6v-.8c0-.5.1-1 .5-1.3A6 6 0 0012 3z"/></svg>
+        <p>You've reached this week's full £2.50. Miss a day? No problem — every Monday starts fresh.</p>
+      </div>
+    </div>
+
+    <!-- 5. HISTORY -->
+    <div class="screen" data-screen="history">
+      <div class="back-row" onclick="go('dashboard')">← Plug-in Rewards</div>
+      <h1 class="scr-title">Plug-in history</h1>
+      <p class="subtle">Week 4 · £2.50 earned this week</p>
+      <div class="card">
+        <div class="log-row"><div><div>Monday</div><div class="meta">Plugged in 7:40pm–6:10am · charged 3h 05m</div></div><span class="status-tag counted">Counted</span></div>
+        <div class="log-row"><div><div>Tuesday</div><div class="meta">Plugged in 8:05pm–5:50am · charged 2h 40m</div></div><span class="status-tag counted">Counted</span></div>
+        <div class="log-row-wrap">
+          <div class="log-row" style="border-bottom:none; padding-bottom:8px;">
+            <div><div>Wednesday</div><div class="meta">Plugged in 6:15pm–7:20pm · charged 1h 05m</div></div>
+            <span class="status-tag short">Under 4 hrs</span>
+          </div>
+          <div class="log-fyi">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11.5h1v4.5h1"/></svg>
+            <p>This top-up was under our 4-hour minimum, so it didn't count towards this week's total.</p>
+          </div>
+        </div>
+        <div class="log-row" style="border-bottom:none;"><div><div>Thursday</div><div class="meta">Plugged in 9:00pm–6:00am · charged 4h 20m</div></div><span class="status-tag counted">Counted</span></div>
+      </div>
+    </div>
+
+    <!-- 7. LEAVE CONFIRMATION -->
+    <div class="screen" data-screen="leave">
+      <div class="back-row" onclick="go('dashboard')">← Plug-in Rewards</div>
+      <h1 class="scr-title">Leave Plug-in Rewards?</h1>
+      <p class="subtle">You've got £8.50 waiting. We'll send that to you before you go — you can rejoin at any point during the season.</p>
+
+      <div class="card">
+        <div class="earn-row"><span>Earned so far</span><span style="color:var(--money); font-weight:700;">£8.50</span></div>
+        <div class="earn-row" style="border-bottom:none;"><span>To be paid out</span><span style="color:var(--money); font-weight:700;">£8.50</span></div>
+      </div>
+
+      <div class="cta-bar">
+        <button class="btn-danger" onclick="startLeaveRedemption()">Redeem £8.50 and leave</button>
+        <button class="btn-ghost" onclick="go('dashboard')">Stay in</button>
+      </div>
+    </div>
+
+    <!-- 7a. LEFT -->
+    <div class="screen" data-screen="left">
+      <div style="text-align:center; padding-top:70px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--navy-700);display:flex;align-items:center;justify-content:center;margin:0 auto;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        <h1 class="scr-title" style="margin-top:18px;">You've left Plug-in Rewards</h1>
+        <p class="subtle" id="left-sub">Your £8.50 is on its way. You're welcome back any time this season.</p>
+      </div>
+      <div class="cta-bar">
+        <button class="btn-primary" onclick="go('charging')">Back to charging</button>
+      </div>
+    </div>
+
+    <!-- 6. REDEEM -->
+    <div class="screen" data-screen="redeem">
+      <div class="back-row" id="redeem-back" onclick="go('dashboard')">← Plug-in Rewards</div>
+      <h1 class="scr-title" id="redeem-title">Redeem your reward</h1>
+      <div class="card" style="text-align:center;">
+        <div class="subtle">Available to redeem</div>
+        <div style="font-size:36px; font-weight:800; color:var(--money); margin-top:4px;">£8.50</div>
+      </div>
+
+      <div class="subtle" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-3); margin:20px 0 8px;">How would you like it?</div>
+
+      <button class="method" id="method-bank" onclick="selectMethod('bank')">
+        <span class="method-radio"></span>
+        <span class="method-body">
+          <span class="method-title">Bank transfer</span>
+          <span class="method-sub">Straight to your account, 2–3 working days</span>
+        </span>
+      </button>
+
+      <button class="method" id="method-voucher" onclick="selectMethod('voucher')">
+        <span class="method-radio"></span>
+        <span class="method-body">
+          <span class="method-title">Amazon voucher</span>
+          <span class="method-sub">Emailed to you within 24 hours</span>
+        </span>
+      </button>
+
+      <div class="card" id="redeem-destination" style="display:none; justify-content:space-between; align-items:center;">
+        <div>
+          <div class="subtle" id="redeem-dest-cap" style="font-size:12px;">Paying to</div>
+          <div id="redeem-dest-label" style="font-size:14px; font-weight:700; margin-top:2px;">Barclays •••• 4821</div>
+        </div>
+        <button class="btn-ghost" id="redeem-dest-change" style="width:auto; margin:0; padding:8px 14px; font-size:12px;" onclick="go('bank-setup')">Change</button>
+      </div>
+
+      <p class="subtle" style="font-size:11.5px; margin-top:16px;">Plug-in Rewards may count as miscellaneous income for tax purposes, whichever option you choose. <a href="#" style="color:var(--teal);">Learn more</a></p>
+
+      <button class="btn-primary is-disabled" id="redeem-cta" disabled>Choose an option above</button>
+    </div>
+
+    <!-- 6a. BANK SETUP -->
+    <div class="screen" data-screen="bank-setup">
+      <div class="back-row" onclick="go('redeem')">← Redeem</div>
+      <h1 class="scr-title">Set up bank payments</h1>
+      <p class="subtle">Add the account you'd like your Plug-in Rewards paid into.</p>
+      <div class="card">
+        <label class="field-label">Account holder name</label>
+        <input class="field-input" type="text" value="Jordan Smith">
+        <label class="field-label">Sort code</label>
+        <input class="field-input" type="text" value="20-45-67">
+        <label class="field-label">Account number</label>
+        <input class="field-input" type="text" value="48210934">
+      </div>
+      <div class="reassure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p>Stored securely and only used to pay your Plug-in Rewards — never shared or used for anything else.</p>
+      </div>
+      <button class="btn-primary" onclick="saveBankDetails()">Save bank details</button>
+    </div>
+
+    <!-- 6b. REDEEMED -->
+    <div class="screen" data-screen="redeemed">
+      <div style="text-align:center; padding-top:70px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--teal-dim);display:flex;align-items:center;justify-content:center;margin:0 auto;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h1 class="scr-title" style="margin-top:18px;">£8.50 sent</h1>
+        <p class="subtle" id="redeemed-sub">On its way to your bank account — usually within 2–3 working days.</p>
+      </div>
+      <button class="btn-primary" onclick="go('dashboard')" style="margin-top:30px;">Back to Plug-in Rewards</button>
+    </div>
+
+  </div>
+
+  <div class="tab-bar" id="tab-bar">
+    <div class="navtab active tappable" data-tab="charging" onclick="go('charging')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+      <span>Charging</span>
+    </div>
+    <div class="navtab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>
+      <span>Usage</span>
+    </div>
+    <div class="navtab tappable" data-tab="rewards" onclick="goRewards()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.9L6 21l1.6-7L2.2 9.2l7.1-.6L12 2z"/></svg>
+      <span>Rewards</span>
+    </div>
+    <div class="navtab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c0 4.4-4 8-9 8a9.7 9.7 0 01-4-.8L3 21l1.3-4A7.9 7.9 0 013 12c0-4.4 4-8 9-8s9 3.6 9 8z"/></svg>
+      <span>Otis</span>
+    </div>
+    <div class="navtab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9 2 2 0 11-2.8 2.8 1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.9.3 2 2 0 11-2.8-2.8 1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9 2 2 0 112.8-2.8 1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3 2 2 0 112.8 2.8 1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+
+  <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+  <div class="bottom-sheet" id="how-it-works-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body">
+      <h1 class="scr-title" style="margin-top:0;">How it works</h1>
+      <p class="subtle" style="font-size:12px;">Up to £30 this winter — £2.50 a week, over 12 weeks. Every week works on its own.</p>
+
+      <div style="margin-top:16px;">
+        <div class="subtle" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-3); margin-bottom:6px;">Three simple rules</div>
+        <div class="rule-row"><span class="rule-num">1</span><span><b style="color:var(--text-1);">Set a charge target</b> and the time you need the car ready by</span></div>
+        <div class="rule-row"><span class="rule-num">2</span><span><b style="color:var(--text-1);">Plug in for 4 hours or more</b>, three times a week</span></div>
+        <div class="rule-row" style="border-bottom:none;"><span class="rule-num">3</span><span><b style="color:var(--text-1);">Give your car room to charge</b> — it needs to take at least an hour's charge for the session to count.</span></div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="tier-row"><span class="tier-label">1 plug-in that week</span><span class="tier-amt">£1.50</span></div>
+        <div class="tier-row"><span class="tier-label">2 plug-ins</span><span class="tier-amt">£2.00</span></div>
+        <div class="tier-row"><span class="tier-label">3 or more</span><span class="tier-amt">£2.50</span></div>
+      </div>
+
+      <div class="reassure" style="margin-top:16px; margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5fe3d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        <p><b style="color:var(--text-1);">No max charges.</b> Charge at full speed whenever you need the car ready fast. It just won't count towards that week's total.</p>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="subtle" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-3); margin-bottom:6px;">Your week</div>
+        <p class="subtle" style="font-size:12px; margin:0; line-height:1.55;">Weeks run Monday to Monday and reset at 6am. Miss a day and nothing carries over. Every Monday starts fresh.</p>
+      </div>
+
+      <div style="border-top:1px solid var(--line); padding-top:14px; margin-bottom:4px;">
+        <button class="leave-link" onclick="closeSheet(); go('leave');">Leave Plug-in Rewards</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="closeSheet()">Got it</button>
+  </div>
+
+</div>
+
+<script>
+let state = { joined:false, bankDetailsSet:false, method:null, leaving:false };
+
+const PAYOUT_COPY = {
+  bank:    'On its way to your bank account — usually within 2–3 working days.',
+  voucher: 'Your Amazon voucher code is on its way to your email — usually within 24 hours.'
+};
+
+/* ---- Redemption ---------------------------------------------------- */
+function selectMethod(m){
+  state.method = m;
+  renderRedeem();
+}
+
+function renderRedeem(){
+  const bank = document.getElementById('method-bank');
+  const vou  = document.getElementById('method-voucher');
+  const dest = document.getElementById('redeem-destination');
+  const cta  = document.getElementById('redeem-cta');
+
+  document.getElementById('redeem-title').textContent =
+    state.leaving ? 'Redeem before you go' : 'Redeem your reward';
+  const back = document.getElementById('redeem-back');
+  back.textContent = state.leaving ? '← Leave Plug-in Rewards' : '← Plug-in Rewards';
+  back.onclick = () => go(state.leaving ? 'leave' : 'dashboard');
+
+  bank.classList.toggle('selected', state.method === 'bank');
+  vou.classList.toggle('selected', state.method === 'voucher');
+
+  if(!state.method){
+    dest.style.display = 'none';
+    cta.textContent = 'Choose an option above';
+    cta.className = 'btn-primary is-disabled';
+    cta.disabled = true;
+    cta.onclick = null;
+    return;
+  }
+
+  cta.className = 'btn-primary';
+  cta.disabled = false;
+
+  if(state.method === 'bank' && !state.bankDetailsSet){
+    dest.style.display = 'none';
+    cta.textContent = 'Set up bank payments';
+    cta.onclick = () => go('bank-setup');
+    return;
+  }
+
+  dest.style.display = 'flex';
+  const isBank = state.method === 'bank';
+  document.getElementById('redeem-dest-cap').textContent = isBank ? 'Paying to' : 'Emailing voucher to';
+  document.getElementById('redeem-dest-label').textContent = isBank ? 'Barclays •••• 4821' : 'jordan.smith@email.com';
+  document.getElementById('redeem-dest-change').style.display = isBank ? 'block' : 'none';
+  cta.textContent = state.leaving ? 'Redeem £8.50 and leave' : 'Confirm redemption';
+  cta.onclick = () => confirmRedemption();
+}
+
+function confirmRedemption(){
+  const copy = PAYOUT_COPY[state.method];
+  if(state.leaving){
+    document.getElementById('left-sub').textContent =
+      copy + ' You\u2019re welcome back any time this season.';
+    leaveScheme();
+    return;
+  }
+  document.getElementById('redeemed-sub').textContent = copy;
+  go('redeemed');
+}
+
+function saveBankDetails(){
+  state.bankDetailsSet = true;
+  state.method = 'bank';
+  renderRedeem();
+  go('redeem');
+}
+
+/* ---- Enrolment state ------------------------------------------------ */
+function joinScheme(){
+  state.joined = true;
+  go('optin');
+}
+
+/* Tapping the Rewards tab: pitch before joining, dashboard after. */
+function goRewards(){
+  go(state.joined ? 'dashboard' : 'explainer');
+}
+
+/* Leaving always pays out the balance first. */
+function startLeaveRedemption(){
+  state.leaving = true;
+  state.method = null;
+  renderRedeem();
+  go('redeem');
+}
+
+/* Leaving also resets the prototype to its pre-join state, so the next
+   research session starts from the pitch without needing a page reload. */
+function leaveScheme(){
+  state.joined = false;
+  state.bankDetailsSet = false;
+  state.method = null;
+  state.leaving = false;
+  renderRedeem();
+  go('left');
+}
+
+/* Each screen is a flex column: a scrollable body, with any pinned CTA bar
+   sitting below it rather than floating over it. Wrapping happens here so
+   the markup for each screen stays flat and easy to edit. */
+function buildScreenLayout(){
+  document.querySelectorAll('.screen').forEach(screen => {
+    const cta = screen.querySelector(':scope > .cta-bar');
+    const body = document.createElement('div');
+    body.className = 'screen-body';
+    Array.from(screen.children).forEach(child => {
+      if(child !== cta) body.appendChild(child);
+    });
+    screen.insertBefore(body, cta);
+  });
+}
+
+function resetScroll(id){
+  const body = document.querySelector(`.screen[data-screen="${id}"] .screen-body`);
+  if(body) body.scrollTop = 0;
+}
+
+function openSheet(){
+  document.getElementById('sheet-backdrop').classList.add('open');
+  document.getElementById('how-it-works-sheet').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('sheet-backdrop').classList.remove('open');
+  document.getElementById('how-it-works-sheet').classList.remove('open');
+}
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`.screen[data-screen="${id}"]`).classList.add('active');
+  if(id === 'explainer'){
+    goStep(1);
+  }
+  resetScroll(id);
+  closeSheet();
+
+  const tab = (id === 'charging') ? 'charging' : 'rewards';
+  document.querySelectorAll('.navtab').forEach(el=>el.classList.remove('active'));
+  const activeTab = document.querySelector(`.navtab[data-tab="${tab}"]`);
+  if(activeTab) activeTab.classList.add('active');
+}
+
+function goStep(n){
+  document.querySelectorAll('.onb-slide').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`.onb-slide[data-step="${n}"]`).classList.add('active');
+  document.querySelectorAll('.onb-cta').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`.onb-cta[data-cta="${n}"]`).classList.add('active');
+  resetScroll('explainer');
+}
+
+function toggleLine(which){
+  const chip = document.getElementById('legend-'+which);
+  if(chip.classList.contains('active')){
+    highlightLine('both');
+  } else {
+    highlightLine(which);
+  }
+}
+
+function highlightLine(which){
+  const instant = document.getElementById('chart-instant');
+  const flexible = document.getElementById('chart-flexible');
+  const chipInstant = document.getElementById('legend-instant');
+  const chipFlexible = document.getElementById('legend-flexible');
+  chipInstant.classList.remove('active');
+  chipFlexible.classList.remove('active');
+  if(which === 'instant'){
+    instant.setAttribute('opacity','1');
+    flexible.setAttribute('opacity','0.2');
+    chipInstant.classList.add('active');
+  } else if(which === 'flexible'){
+    flexible.setAttribute('opacity','1');
+    instant.setAttribute('opacity','0.2');
+    chipFlexible.classList.add('active');
+  } else {
+    instant.setAttribute('opacity','1');
+    flexible.setAttribute('opacity','1');
+  }
+}
+
+function toggleDayTip(e){
+  e.stopPropagation();
+  document.getElementById('day-tip').classList.toggle('show');
+}
+document.addEventListener('click', function(){
+  const tip = document.getElementById('day-tip');
+  if(tip) tip.classList.remove('show');
+});
+
+buildScreenLayout();
+renderRedeem();
+go('explainer');
+</script>
+
+</body>
 </html>
